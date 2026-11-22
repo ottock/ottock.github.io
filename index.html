@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="branco">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>otto@portfolio:~$</title>
+<meta name="description" content="Otto Camargo Kuchkarian — Software Engineer no J.P. Morgan Chase & Co. Portfólio em estilo terminal retrô.">
+<meta name="author" content="Otto Camargo Kuchkarian">
+<meta property="og:title" content="Otto Camargo Kuchkarian — Software Engineer">
+<meta property="og:description" content="Portfólio em estilo terminal retrô. Java, Python, PL/SQL, Oracle, Docker e Kubernetes.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#d5ccb6">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect width='16' height='16' rx='2' fill='%23f5f0e2'/%3E%3Cpath fill='%231f5fbf' d='M3 4h1v1H3zM4 5h1v1H4zM5 6h1v1H5zM6 7h1v1H6zM5 8h1v1H5zM4 9h1v1H4zM3 10h1v1H3zM8 10h5v1H8z'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=VT323&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   TEMAS  — verde (fósforo verde) · azul (fósforo azul) · branco (bege/branco com azul)
+   ============================================================ */
+:root{
+  --font-display:'VT323', 'Courier New', monospace;
+  --font-body:'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --bar-h:34px;
+}
+html[data-theme="verde"]{
+  --bg:#030803; --dot:rgba(57,255,106,.07); --halo:rgba(57,255,106,.10);
+  --win:#061108; --win-2:#0a1c0e; --fg:#b6f3bd; --dim:#5f9a69;
+  --pri:#39ff6a; --pri-ink:#021405; --line:rgba(57,255,106,.28); --line-strong:rgba(57,255,106,.6);
+  --glow:rgba(57,255,106,.55); --glow-soft:rgba(57,255,106,.22); --drop:rgba(0,0,0,.65);
+  --scan:.26; --vig:.6;
+}
+html[data-theme="azul"]{
+  --bg:#02050d; --dot:rgba(77,184,255,.07); --halo:rgba(77,184,255,.10);
+  --win:#050c1a; --win-2:#0a1730; --fg:#c4e2ff; --dim:#5f84ad;
+  --pri:#4db8ff; --pri-ink:#00101f; --line:rgba(77,184,255,.28); --line-strong:rgba(77,184,255,.6);
+  --glow:rgba(77,184,255,.55); --glow-soft:rgba(77,184,255,.22); --drop:rgba(0,0,0,.65);
+  --scan:.26; --vig:.6;
+}
+html[data-theme="branco"]{
+  --bg:#d5ccb6; --dot:rgba(40,34,24,.13); --halo:transparent;
+  --win:#f5f0e2; --win-2:#e9e1cc; --fg:#2a2620; --dim:#7b7363;
+  --pri:#1f5fbf; --pri-ink:#ffffff; --line:rgba(42,38,32,.25); --line-strong:#2a2620;
+  --glow:transparent; --glow-soft:transparent; --drop:rgba(42,38,32,.35);
+  --scan:.05; --vig:.22;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  background:var(--bg); color:var(--fg);
+  font-family:var(--font-body); font-size:15px; line-height:1.65;
+  overflow:hidden; overscroll-behavior:none;
+  -webkit-font-smoothing:antialiased;
+  text-shadow:0 0 2px var(--glow-soft);
+  transition:background .25s, color .25s;
+}
+::selection{background:var(--pri);color:var(--pri-ink);text-shadow:none}
+a{color:var(--pri);text-underline-offset:3px}
+a:hover{background:var(--pri);color:var(--pri-ink);text-decoration:none;text-shadow:none}
+b,strong{color:var(--pri);font-weight:600}
+button{font:inherit;color:inherit}
+kbd{font-family:var(--font-display);font-size:1.15em;border:1px solid var(--line-strong);padding:0 5px;border-radius:3px;color:var(--pri)}
+.pri{color:var(--pri)} .dim{color:var(--dim)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:2px dashed var(--pri);outline-offset:3px}
+*{scrollbar-width:thin;scrollbar-color:var(--pri) var(--win-2)}
+
+/* ============================== TELA / DESKTOP ============================== */
+#screen{position:fixed;inset:0;transform-origin:center}
+#screen.power-on{animation:powerOn .7s cubic-bezier(.2,.7,.2,1)}
+@keyframes powerOn{
+  0%{transform:scale(0,.004);filter:brightness(5)}
+  25%{transform:scale(1,.004);filter:brightness(4)}
+  60%{transform:scale(1,1.02);filter:brightness(1.6)}
+  100%{transform:scale(1,1);filter:brightness(1)}
+}
+#desktop{
+  position:absolute;inset:0 0 var(--bar-h) 0;overflow:hidden;
+  background:
+    radial-gradient(ellipse at 50% 40%, var(--halo), transparent 65%),
+    radial-gradient(var(--dot) 1px, transparent 1.4px) 0 0/22px 22px;
+}
+
+/* barra de ferramentas (canto superior esquerdo) */
+.toolbar{position:absolute;top:14px;left:14px;display:flex;gap:6px;z-index:5}
+.tool{
+  width:40px;height:40px;display:grid;place-items:center;cursor:pointer;
+  background:transparent;border:2px solid transparent;color:var(--pri);border-radius:4px;
+  transition:transform .15s;
+}
+.tool:hover{border-color:var(--line-strong);transform:scale(1.08)}
+.tool:active{transform:scale(.9)}
+.tool svg{width:24px;height:24px;filter:drop-shadow(0 0 3px var(--glow))}
+.tool[aria-pressed="false"]{color:var(--dim)}
+
+/* ============================== JANELAS ============================== */
+.win{
+  position:absolute;display:flex;flex-direction:column;
+  width:min(var(--w,680px), calc(100vw - 28px));
+  max-height:calc(100% - 28px);
+  background:var(--win);
+  border:2px solid var(--line-strong);border-radius:6px;
+  box-shadow:8px 8px 0 var(--drop), 0 0 34px var(--halo);
+  transform-origin:center;
+}
+.win[hidden]{display:none}
+.win-bar{
+  flex:none;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:4px 10px 4px 14px;min-height:40px;
+  background:var(--win-2);color:var(--dim);
+  border-bottom:2px solid var(--line-strong);border-radius:3px 3px 0 0;
+  font-family:var(--font-display);font-size:24px;line-height:1;letter-spacing:.5px;
+  cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none;
+}
+.win.active .win-bar{background:var(--pri);color:var(--pri-ink);text-shadow:none}
+.win.dragging .win-bar{cursor:grabbing}
+.win-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.win-title::before{content:"■ ";font-size:.7em;vertical-align:2px}
+.win-close{
+  background:none;border:0;cursor:pointer;color:inherit;
+  font-family:var(--font-display);font-size:24px;padding:2px 4px;line-height:1;
+}
+.win-close:hover{background:var(--pri-ink);color:var(--pri)}
+html[data-theme="branco"] .win:not(.active) .win-close:hover{background:var(--fg);color:var(--win)}
+.win-body{flex:1;min-height:0;overflow:auto;padding:26px 30px 30px}
+.win-body::-webkit-scrollbar{width:12px}
+.win-body::-webkit-scrollbar-track{background:var(--win-2);border-left:1px solid var(--line)}
+.win-body::-webkit-scrollbar-thumb{background:var(--pri);border:3px solid var(--win-2)}
+.win.opening{animation:winOpen .32s steps(7,end)}
+.win.closing{animation:winClose .22s steps(5,end) forwards;pointer-events:none}
+@keyframes winOpen{
+  0%{transform:scale(.4,.01);filter:brightness(3);opacity:.2}
+  45%{transform:scale(1,.01);filter:brightness(2.5);opacity:1}
+  100%{transform:scale(1,1);filter:brightness(1)}
+}
+@keyframes winClose{
+  0%{transform:scale(1,1)}
+  55%{transform:scale(1,.01);filter:brightness(3)}
+  100%{transform:scale(0,.01);opacity:0}
+}
+
+/* conteúdo genérico */
+.win h2,.win h3{font-family:var(--font-display);font-weight:400;margin:0;line-height:1.05;color:var(--pri);text-shadow:0 0 6px var(--glow)}
+.win h3{font-size:27px}
+.cmd{font-family:var(--font-body);color:var(--dim);margin:26px 0 10px;font-size:14px}
+.cmd:first-child{margin-top:0}
+.cmd .ps1{color:var(--pri)}
+.cmd .ps1::after{content:" "}
+hr{border:0;border-top:1px dashed var(--line-strong);margin:22px 0}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{
+  font-family:var(--font-display);font-size:20px;line-height:1;
+  padding:4px 8px 3px;border:1px solid var(--line-strong);border-radius:3px;color:var(--fg);
+  transition:background .1s,color .1s;
+}
+.chip:hover{background:var(--pri);color:var(--pri-ink);text-shadow:none}
+.chips .chip-label{font-family:var(--font-body);font-size:13px;color:var(--dim);align-self:center;margin-right:2px}
+.btn{
+  display:inline-block;cursor:pointer;text-decoration:none;
+  font-family:var(--font-display);font-size:24px;line-height:1;
+  padding:8px 14px 7px;background:transparent;color:var(--pri);
+  border:2px solid var(--pri);border-radius:3px;
+}
+.btn:hover,.btn:focus-visible{background:var(--pri);color:var(--pri-ink);text-shadow:none}
+.btn:active{transform:translate(1px,1px)}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+.linkish{background:none;border:0;padding:0;cursor:pointer;color:var(--pri);text-decoration:underline;text-underline-offset:3px}
+.linkish:hover{background:var(--pri);color:var(--pri-ink)}
+
+/* ---------- home ---------- */
+#win-home .win-body{padding:34px 28px 26px}
+.home{text-align:center}
+.hello{
+  font-family:var(--font-display);font-weight:400;margin:6px 0 0;
+  font-size:clamp(46px, 8.5vw, 80px);line-height:.95;color:var(--fg);
+}
+.hello .pri{text-shadow:0 0 10px var(--glow)}
+.typed{font-family:var(--font-display);font-size:clamp(20px,3.4vw,26px);margin:14px 0 6px;min-height:1.3em;color:var(--fg)}
+.cursor-block{display:inline-block;width:.55em;height:1em;background:var(--pri);vertical-align:-3px;margin-left:2px;animation:blink 1s steps(1) infinite;box-shadow:0 0 6px var(--glow)}
+@keyframes blink{50%{opacity:0}}
+.icons{display:grid;grid-template-columns:repeat(4, minmax(0,1fr));gap:6px 8px;max-width:520px;margin:26px auto 4px}
+.icon{
+  display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;
+  background:none;border:0;padding:8px 4px;border-radius:4px;color:var(--pri);
+  transition:transform .15s;
+}
+.icon svg{width:46px;height:46px;filter:drop-shadow(0 0 4px var(--glow));transition:transform .15s}
+.icon span{font-family:var(--font-display);font-size:21px;line-height:1;color:var(--fg);padding:2px 5px 1px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.icon:hover svg,.icon:focus-visible svg{transform:translateY(-3px)}
+.icon:hover span,.icon:focus-visible span{background:var(--pri);color:var(--pri-ink);text-shadow:none}
+.icon:active{transform:scale(.92)}
+.home-tip{font-size:12.5px;margin:18px 0 0}
+
+/* ---------- sobre ---------- */
+.about-head{display:flex;gap:22px;align-items:center}
+.avatar{
+  flex:none;width:112px;height:112px;display:grid;place-items:center;
+  border:2px solid var(--pri);border-radius:12px;background:var(--win-2);
+  box-shadow:inset 0 0 22px var(--halo), 0 0 14px var(--glow-soft);
+  font-family:var(--font-display);font-size:56px;color:var(--pri);text-shadow:0 0 10px var(--glow);
+  position:relative;overflow:hidden;
+}
+.avatar::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(transparent 0 2px, rgba(0,0,0,.18) 2px 3px)}
+.name{font-size:clamp(34px,5vw,44px)}
+.role{margin:4px 0 0;font-size:14px}
+.langs{display:grid;grid-template-columns:auto auto 1fr;gap:4px 16px;align-items:center}
+.langs .bar{font-family:var(--font-display);font-size:24px;letter-spacing:2px;line-height:1;color:var(--pri);text-shadow:0 0 6px var(--glow)}
+.langs .bar .off{color:var(--line-strong);text-shadow:none}
+
+/* ---------- experiência (git log) ---------- */
+.gitlog{list-style:none;margin:0;padding:0}
+.commit{position:relative;padding:0 0 26px 30px}
+.commit::before{content:"";position:absolute;left:7px;top:14px;bottom:0;border-left:2px solid var(--line-strong)}
+.commit:last-child{padding-bottom:0}
+.commit:last-child::before{display:none}
+.node{position:absolute;left:0;top:-1px;font-family:var(--font-display);font-size:26px;color:var(--pri);line-height:1;text-shadow:0 0 6px var(--glow)}
+.c-head{font-size:13px;color:var(--dim)}
+.hash{color:#d9c24a}
+html[data-theme="branco"] .hash{color:#9a6b00}
+.ref{color:var(--pri)}
+.commit h3{margin-top:6px}
+.meta{font-size:13.5px;color:var(--dim);margin-top:2px}
+.diff{list-style:none;margin:12px 0 0;padding:0}
+.diff li{position:relative;padding-left:20px;margin:6px 0}
+.diff li::before{content:"+";position:absolute;left:2px;color:var(--pri);font-weight:600}
+.commit.root .c-head{font-size:14px}
+
+/* ---------- pesquisa ---------- */
+.scene{
+  border:2px solid var(--line-strong);border-radius:4px;background:var(--win-2);
+  padding:10px 10px 4px;margin:4px 0 6px;
+}
+.scene svg{display:block;width:100%;height:auto}
+.scene .g{fill:var(--dim)} .scene .st{fill:var(--dim);opacity:.55}
+.scene .bug{fill:var(--fg)}
+.scene .bbox{fill:none;stroke:var(--pri);stroke-width:.35;stroke-dasharray:1 .6;animation:bboxBlink 1.4s steps(1) infinite}
+.scene .lbl{fill:var(--pri)} .scene .lbl-t{fill:var(--pri-ink);font-family:var(--font-display);font-size:3.1px}
+.scene .scan{fill:var(--pri);opacity:.3}
+@keyframes bboxBlink{80%{opacity:.25}}
+.caption{font-size:12px;color:var(--dim);margin:6px 0 0}
+.p-title{margin-top:18px}
+.scene .wire{fill:var(--dim);opacity:.85}
+.scene .ray{stroke:var(--pri);stroke-width:.25;stroke-dasharray:.8 .5;animation:bboxBlink 1.4s steps(1) infinite}
+.scene .tl{fill:var(--dim);font-family:var(--font-display);font-size:3.1px} .scene .tl.tp{fill:var(--pri)}
+
+/* ---------- skills (tree) ---------- */
+.tree{font-size:14.5px}
+.tree .root{color:var(--pri)}
+.dir{display:grid;grid-template-columns:auto 1fr;column-gap:10px;padding:2px 0 12px;position:relative}
+.dir:not(.last)::before{content:"";position:absolute;left:.5ch;top:1.3em;bottom:0;border-left:1px solid var(--line-strong)}
+.dir .branch{color:var(--line-strong);white-space:pre}
+.dir .dname{color:var(--pri);font-weight:500}
+.dir .chips{grid-column:2;margin-top:6px}
+.tree-sum{color:var(--dim);font-size:13px;margin-top:8px}
+
+/* ---------- formação ---------- */
+.edu{margin:0 0 22px}
+.edu:last-of-type{margin-bottom:0}
+.progress{font-family:var(--font-display);font-size:22px;line-height:1;margin-top:10px;color:var(--pri);white-space:nowrap;overflow:hidden;text-shadow:0 0 6px var(--glow)}
+.progress .off{color:var(--line-strong);text-shadow:none}
+.ach{list-style:none;margin:0;padding:0}
+.ach li{display:grid;grid-template-columns:auto 1fr;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line)}
+.ach li:last-child{border-bottom:0}
+.ach .badge{font-family:var(--font-display);font-size:22px;color:var(--pri);line-height:1.1}
+.ach .t{font-weight:600;color:var(--fg)}
+.ach .s{font-size:13px;color:var(--dim)}
+
+/* ---------- contato (finger) ---------- */
+.finger{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;margin:0}
+.finger dt{color:var(--dim)}
+.finger dd{margin:0;overflow-wrap:anywhere}
+
+/* ---------- terminal ---------- */
+#win-terminal .win-body{padding:14px 16px;cursor:text;font-size:14.5px;line-height:1.55}
+.term-out > div{white-space:pre-wrap;overflow-wrap:anywhere;margin:0}
+.term-line{white-space:pre-wrap;overflow-wrap:anywhere}
+.ps1{color:var(--pri)}
+.ps1 .path{color:var(--fg)}
+.term-cursor{background:var(--pri);color:var(--pri-ink);text-shadow:none}
+.term-cursor.blink{animation:blinkBg 1s steps(1) infinite}
+@keyframes blinkBg{50%{background:transparent;color:inherit}}
+.term-line{position:relative}
+#term-input{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;background:transparent;opacity:0;color:transparent;caret-color:transparent;pointer-events:none;font-size:16px}
+.t-err{color:#ff6b6b} html[data-theme="branco"] .t-err{color:#b3261e}
+.t-help{display:grid;grid-template-columns:max-content 1fr;gap:0 18px}
+.t-help .c{color:var(--pri)}
+.t-cols{display:flex;flex-wrap:wrap;gap:0 22px}
+.t-dir{color:#6cb6ff;font-weight:600} html[data-theme="azul"] .t-dir{color:#ffd27a} html[data-theme="branco"] .t-dir{color:#2a7a3a}
+.neo{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start}
+.neo pre{margin:0;font:inherit;color:var(--pri);text-shadow:0 0 6px var(--glow);line-height:1.15}
+.neo .k{color:var(--pri);font-weight:600}
+.swatches{display:flex;gap:0;margin-top:6px}
+.swatches i{width:22px;height:12px;display:block}
+.term-line.gaming{height:0;overflow:hidden;opacity:0}
+.term-out > div.snake{white-space:normal;display:inline-block;margin:8px 0 6px}
+.snake canvas{display:block;border:2px solid var(--line-strong);touch-action:none;max-width:100%;cursor:pointer}
+.snake-hud{display:flex;justify-content:space-between;gap:16px;font-family:var(--font-display);font-size:20px;line-height:1.1;margin-top:6px}
+.snake-hud b{color:var(--pri);font-weight:400}
+.snake-help{font-size:12px;margin-top:2px}
+.snake-pad{display:none;grid-template-columns:repeat(3,54px);grid-template-areas:". u ." "l d r";gap:6px;justify-content:center;margin-top:10px}
+.snake-pad button{height:44px;background:var(--win-2);border:2px solid var(--pri);color:var(--pri);border-radius:4px;font-size:18px;cursor:pointer;touch-action:manipulation}
+.snake-pad button:active{background:var(--pri);color:var(--pri-ink)}
+.snake-pad [data-d=up]{grid-area:u} .snake-pad [data-d=left]{grid-area:l} .snake-pad [data-d=down]{grid-area:d} .snake-pad [data-d=right]{grid-area:r}
+@media (hover:none){.snake-pad{display:grid}}
+
+/* ============================== STATUS BAR (estilo tmux) ============================== */
+.statusbar{
+  position:absolute;left:0;right:0;bottom:0;height:var(--bar-h);z-index:9;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:var(--win);border-top:2px solid var(--line-strong);
+  font-family:var(--font-display);font-size:20px;line-height:1;padding:0 8px;
+}
+.sb-left,.sb-right{display:flex;align-items:center;gap:6px;min-width:0}
+.sb-left{overflow-x:auto;scrollbar-width:none}
+.sb-left::-webkit-scrollbar{display:none}
+.sb-session{background:var(--pri);color:var(--pri-ink);padding:4px 8px 3px;text-shadow:none;white-space:nowrap}
+.task{background:none;border:0;cursor:pointer;padding:4px 7px 3px;font-family:var(--font-display);font-size:20px;line-height:1;color:var(--dim);white-space:nowrap}
+.task:hover{color:var(--fg)}
+.task.active{color:var(--pri);text-shadow:0 0 6px var(--glow)}
+.sb-right a{color:var(--fg);text-decoration:none;padding:4px 6px 3px}
+.sb-right a:hover{background:var(--pri);color:var(--pri-ink)}
+.sb-clock{color:var(--pri);padding-left:6px;border-left:1px solid var(--line-strong);white-space:nowrap}
+
+/* ============================== MASCOTE ============================== */
+.mascot{
+  position:absolute;right:22px;bottom:16px;z-index:4;
+  width:64px;height:56px;background:none;border:0;padding:0;cursor:pointer;color:var(--pri);
+  animation:bob 2.6s ease-in-out infinite;
+}
+.mascot svg{width:100%;height:100%;filter:drop-shadow(0 0 5px var(--glow))}
+.mascot .s{fill:var(--win)}
+.mascot .E{animation:eyes 4.2s steps(1) infinite}
+.mascot:hover{animation-play-state:paused}
+@keyframes bob{50%{transform:translateY(-6px)}}
+@keyframes eyes{0%,92%{opacity:1}93%,97%{opacity:0}}
+.bubble{
+  position:absolute;right:24px;bottom:84px;z-index:4;max-width:min(270px, calc(100vw - 48px));
+  background:var(--win);border:2px solid var(--pri);border-radius:6px;padding:10px 12px;
+  font-family:var(--font-display);font-size:21px;line-height:1.1;color:var(--fg);
+  box-shadow:5px 5px 0 var(--drop);
+}
+.bubble[hidden]{display:none}
+.bubble::after{content:"";position:absolute;right:26px;bottom:-9px;width:14px;height:14px;background:var(--win);border-right:2px solid var(--pri);border-bottom:2px solid var(--pri);transform:rotate(45deg)}
+.bubble .who{color:var(--pri)}
+
+/* svg pixel art */
+svg .p{fill:var(--pri)} svg .d{fill:var(--dim)}
+
+/* ============================== BOOT ============================== */
+#boot{
+  position:fixed;inset:0;z-index:9500;background:var(--bg);color:var(--pri);
+  padding:clamp(18px,4vw,48px);overflow:hidden;cursor:pointer;
+  font-family:var(--font-display);font-size:clamp(17px,2.3vw,23px);line-height:1.2;
+  text-shadow:0 0 6px var(--glow);transform-origin:center;
+}
+#boot pre{margin:0;font:inherit;white-space:pre-wrap}
+#boot .ok{color:var(--fg)}
+#boot .skip{position:absolute;right:clamp(18px,4vw,48px);bottom:clamp(14px,3vw,32px);color:var(--dim);font-size:.85em;animation:blink 1.4s steps(1) infinite}
+#boot.off{animation:crtOff .45s ease-in forwards}
+@keyframes crtOff{
+  0%{transform:scale(1,1);filter:brightness(1)}
+  60%{transform:scale(1,.004);filter:brightness(5)}
+  100%{transform:scale(0,.004);filter:brightness(8);opacity:0}
+}
+
+/* ============================== EFEITO CRT ============================== */
+.crt-fx{position:fixed;inset:0;pointer-events:none;z-index:9800}
+.crt-scan{background:repeating-linear-gradient(to bottom, rgba(0,0,0,var(--scan)) 0 1px, transparent 1px 3px);animation:flicker 7s steps(1) infinite}
+.crt-vig{background:radial-gradient(ellipse at center, transparent 58%, rgba(0,0,0,var(--vig)) 100%);z-index:9801}
+.crt-roll{top:-30vh;bottom:auto;height:30vh;z-index:9802;background:linear-gradient(to bottom, transparent, rgba(255,255,255,.035) 50%, transparent);animation:roll 9s linear infinite}
+html[data-theme="branco"] .crt-roll{opacity:.5}
+@keyframes flicker{0%{opacity:.92}12%{opacity:1}30%{opacity:.96}31%{opacity:.86}32%{opacity:1}70%{opacity:.95}88%{opacity:1}}
+@keyframes roll{to{transform:translateY(160vh)}}
+body.no-crt .crt-fx{display:none}
+body.no-crt{text-shadow:none}
+
+/* ============================== MOBILE ============================== */
+@media (max-width: 760px){
+  body{font-size:14px}
+  .toolbar{top:8px;left:8px}
+  .tool{width:36px;height:36px}
+  #win-home{left:10px !important;top:56px !important;width:calc(100vw - 20px) !important}
+  #win-home .win-bar{cursor:default}
+  .win:not(#win-home){
+    left:0 !important;top:auto !important;bottom:0;width:100% !important;max-height:calc(100% - 46px);
+    border-radius:10px 10px 0 0;border-bottom:0;box-shadow:0 -6px 0 var(--drop);
+  }
+  .win:not(#win-home) .win-bar{cursor:default;border-radius:7px 7px 0 0}
+  .win:not(#win-home).opening{animation:sheetUp .28s steps(6,end)}
+  .win:not(#win-home).closing{animation:sheetDown .2s steps(4,end) forwards}
+  .win-body{padding:20px 18px 26px}
+  #win-home .win-body{padding:26px 10px 22px}
+  .icons{gap:4px 0}
+  .icon{padding:8px 0}
+  .icon svg{width:38px;height:38px}
+  .icon span{font-size:17px;padding:2px 2px 1px}
+  .about-head{flex-direction:column;align-items:flex-start;gap:14px}
+  .avatar{width:88px;height:88px;font-size:44px}
+  .mascot{width:48px;height:42px;right:12px;bottom:12px}
+  .bubble{right:12px;bottom:64px}
+  .hide-m{display:none}
+  .sb-right a{display:none}
+  .sb-right a.keep{display:inline}
+}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
+@keyframes sheetDown{to{transform:translateY(100%)}}
+@media (max-height: 560px) and (min-width: 761px){
+  .hello{font-size:52px} .icons{margin-top:14px} #win-home .win-body{padding:20px}
+}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition:none !important}
+  .crt-roll,.scene .scan{display:none}
+}
+</style>
+</head>
+<body>
+
+<noscript>
+  <div style="padding:24px;font-family:monospace">
+    Este site precisa de JavaScript. Currículo: <a href="curriculo.pdf">curriculo.pdf</a> ·
+    <a href="mailto:ottock@outlook.com">ottock@outlook.com</a>
+  </div>
+</noscript>
+
+<div id="boot" aria-hidden="true"><pre id="boot-text"></pre><div class="skip">[ pressione qualquer tecla para pular ]</div></div>
+
+<div id="screen">
+  <main id="desktop" aria-label="Área de trabalho">
+    <div class="toolbar" role="toolbar" aria-label="Preferências">
+      <button class="tool" id="btn-theme" type="button" title="tema" aria-label="Trocar tema de cores"></button>
+      <button class="tool" id="btn-sound" type="button" title="sons" aria-label="Ligar ou desligar sons" aria-pressed="true"></button>
+      <button class="tool" id="btn-crt" type="button" title="efeito CRT" aria-label="Ligar ou desligar efeito de tela CRT" aria-pressed="true"></button>
+    </div>
+    <!-- janelas são criadas pelo JavaScript a partir do objeto CV -->
+    <button class="mascot" id="mascot" type="button" aria-label="Bit, o mascote. Clique para uma dica"></button>
+    <div class="bubble" id="bubble" role="status" hidden></div>
+  </main>
+
+  <footer class="statusbar">
+    <div class="sb-left">
+      <span class="sb-session">[otto]</span>
+      <nav id="tasks" aria-label="Janelas abertas"></nav>
+    </div>
+    <div class="sb-right">
+      <a id="sb-gh" target="_blank" rel="noopener">github</a>
+      <a id="sb-in" target="_blank" rel="noopener">linkedin</a>
+      <a id="sb-mail" class="keep">email</a>
+      <span class="sb-clock" id="clock">--:--</span>
+    </div>
+  </footer>
+</div>
+
+<div class="crt-fx crt-scan" aria-hidden="true"></div>
+<div class="crt-fx crt-vig" aria-hidden="true"></div>
+<div class="crt-fx crt-roll" aria-hidden="true"></div>
+
+<script>
+/* =====================================================================
+   ✏️  EDITE AQUI — todo o conteúdo do site vem deste objeto.
+   Use **texto** para destacar trechos em negrito.
+   ===================================================================== */
+const CV = {
+  nome: 'Otto Camargo Kuchkarian',
+  apelido: 'otto',
+  iniciais: 'OCK',
+  cargo: 'Software Engineer',
+  empresa: 'J.P. Morgan Chase & Co.',
+  email: 'ottock@outlook.com',
+  linkedin: 'https://www.linkedin.com/in/otto-camargo-kuchkarian-540131266',
+  github: 'https://github.com/ottock',
+  cvPdf: 'curriculo.pdf', // coloque o PDF do currículo no repositório com este nome
+
+  frases: [
+    'software engineer @ J.P. Morgan Chase & Co.',
+    'java · python · pl/sql · oracle',
+    'docker · kubernetes · aws · linux',
+    'tcc: carro autônomo com gêmeo digital',
+    'pesquisa em visão computacional',
+    'software confiável, testado e documentado'
+  ],
+
+  perfil: 'Software Engineer no **J.P. Morgan Chase & Co.**, onde comecei como estagiário e fui efetivado em 2026. Desenvolvo, sustento e opero os sistemas que mantêm o banco em conformidade com obrigações regulatórias, fiscais e jurídicas no Brasil, do levantamento de requisitos à produção. Trabalho com Java, Python, Oracle, Docker e Kubernetes, e valorizo software confiável, bem testado e bem documentado.',
+  plano: 'construir software confiável, bem testado e bem documentado.', // linha "Plan:" da janela contato
+
+  experiencia: [
+    {
+      cargo: 'Software Engineer I',
+      empresa: 'J.P. Morgan Chase & Co.',
+      periodo: '09/2026 – atual',
+      refs: 'HEAD -> main, tag: efetivado',
+      bullets: [
+        'Desenvolvimento, sustentação e operação dos sistemas de **Cadastro Positivo, CCS, FepWeb, DIMP e DeRe**, da análise de requisitos à operação, com Agile Scrum.',
+        'Documentação do time no **Confluence**: arquitetura, onboarding e guias de uso e configuração.'
+      ],
+      sistemas: ['Cadastro Positivo', 'CCS', 'FepWeb', 'DIMP', 'DeRe'],
+      stack: ['java', 'python', 'oracle', 'docker', 'kubernetes']
+    },
+    {
+      cargo: 'Software Developer Intern',
+      empresa: 'J.P. Morgan Chase & Co. · CIB (Commercial & Investment Bank)',
+      periodo: '2025 – 2026',
+      refs: 'estágio',
+      bullets: [
+        'Desenvolvimento e sustentação de soluções regulatórias em **Python e PL/SQL**.',
+        'Migrei sistemas legados de **Java para Python** e reestruturei aplicações com **design patterns e arquitetura em camadas**.',
+        'Automação de processos, relatórios regulatórios, integração de dados e ferramentas internas para equipes globais.'
+      ],
+      stack: ['java', 'python', 'pl/sql']
+    }
+  ],
+
+  pesquisa: [
+    {
+      titulo: 'TCC – Carro Autônomo com Gêmeo Digital',
+      local: 'Instituto Mauá de Tecnologia · Trabalho de Conclusão de Curso em grupo',
+      periodo: '2026',
+      arquivo: 'tcc-carro-autonomo.md', cena: 'carro', legenda: 'treinar no virtual, validar no físico',
+      bullets: [
+        'Protótipo de carro autônomo em escala 1:12, sobre chassi de carro RC adaptado, com **NVIDIA Jetson**, câmera e **LiDAR**.',
+        'Uso de **gêmeos digitais** para treinar no ambiente virtual e validar em uma pista física modular construída pelo grupo.',
+        'Selecionado pela assessoria de imprensa do Instituto Mauá para divulgação no evento **Eureka**.'
+      ],
+      stack: ['nvidia jetson', 'câmera + lidar', 'gêmeos digitais', 'redes neurais']
+    },
+    {
+      titulo: 'Iniciação Científica – Visão Computacional',
+      arquivo: 'visao-computacional.md', cena: 'trigo', legenda: 'detecção de pragas em lavoura de trigo',
+      local: 'Instituto Mauá · Convite do Prof. Wânderson de Oliveira Assis',
+      periodo: '2024 – 2025',
+      bullets: [
+        'Processamento de imagem e Machine Learning (**OpenCV, Roboflow**) para identificar pragas em lavouras de trigo.',
+        'Apresentado no **XVI Seminário Mauá de Iniciação Científica** e aprovado para implementação.'
+      ],
+      stack: ['python', 'opencv', 'roboflow', 'machine learning']
+    }
+  ],
+
+  skills: [
+    { cat: 'linguagens',               itens: ['Java', 'Python', 'PL/SQL', 'JavaScript', 'TypeScript', 'C', 'R'] },
+    { cat: 'bancos-de-dados',          itens: ['Oracle Database', 'PostgreSQL', 'MySQL'] },
+    { cat: 'cloud-e-infra',            itens: ['AWS', 'Docker', 'Kubernetes', 'Linux'] },
+    { cat: 'arquitetura',              itens: ['Design patterns', 'arquitetura em camadas'] },
+    { cat: 'web',                      itens: ['React', 'PrimeReact', 'Node.js', 'HTML', 'CSS'] },
+    { cat: 'dados-e-visao-computacional', itens: ['Pandas', 'OpenCV', 'Roboflow'] },
+    { cat: 'ferramentas',              itens: ['Git', 'GitHub', 'Bitbucket', 'Confluence', 'ServiceNow'] },
+    { cat: 'editores',                 itens: ['VS Code', 'PyCharm', 'IntelliJ IDEA', 'Neovim', 'Notepad++'] },
+    { cat: 'metodologias',             itens: ['Agile Scrum', 'levantamento de requisitos', 'documentação técnica'] }
+  ],
+
+  formacao: [
+    { curso: 'Bacharelado em Engenharia da Computação', local: 'Instituto Mauá de Tecnologia · São Caetano do Sul, SP', periodo: '2022 – 2026', inicio: '2022-02-01', fim: '2026-12-15' },
+    { curso: 'Ensino Médio', local: 'Colégio Visconde de Porto Seguro · São Paulo, SP', periodo: 'concluído em 2022' }
+  ],
+
+  certificacoes: [
+    { nome: 'AWS Academy Graduate – Cloud Foundations', detalhe: 'Amazon Web Services · 2025 · 20h' },
+    { nome: 'DSD II – Deutsches Sprachdiplom', detalhe: 'Alemão · Nível B2' },
+    { nome: 'Cambridge English – Entry Level Certificate', detalhe: 'Inglês · Nível A1' },
+    { nome: 'Programa Institucional de Iniciação Científica', detalhe: 'Centro Universitário do Instituto Mauá de Tecnologia · XVI Seminário Mauá de Iniciação Científica' }
+  ],
+
+  idiomas: [
+    { lingua: 'português', nivel: 'nativo', pontos: 5 },
+    { lingua: 'inglês', nivel: 'avançado', pontos: 4 },
+    { lingua: 'alemão', nivel: 'intermediário (B2)', pontos: 3 }
+  ]
+};
+
+/* =====================================================================
+   A partir daqui é o "sistema operacional". Não precisa mexer.
+   ===================================================================== */
+(() => {
+'use strict';
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const md = s => esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+const strip = s => s.replace(/\*\*/g, '');
+const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const hash7 = s => { let h = 2166136261; for (const c of s) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return (h >>> 0).toString(16).padStart(8, '0').slice(0, 7); };
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isMobile = () => matchMedia('(max-width: 760px)').matches;
+const isTouch = () => matchMedia('(hover: none)').matches;
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : v; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+};
+const session = {
+  get(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} }
+};
+const linkLabel = u => u.replace(/^https?:\/\/(www\.)?/, '');
+
+/* ---------------- pixel art ---------------- */
+const PIX_CLASS = { o: 'p', x: 'd', s: 's', E: 'p E', e: 'p' };
+function pix(rows) {
+  const h = rows.length, w = Math.max(...rows.map(r => r.length));
+  let out = '';
+  rows.forEach((r, y) => {
+    let x = 0;
+    while (x < r.length) {
+      const c = r[x];
+      if (c === '.' || c === ' ') { x++; continue; }
+      let x2 = x; while (x2 < r.length && r[x2] === c) x2++;
+      out += c === '#'
+        ? `<rect x="${x}" y="${y}" width="${x2 - x}" height="1" fill="currentColor"/>`
+        : `<rect x="${x}" y="${y}" width="${x2 - x}" height="1" class="${PIX_CLASS[c] || ''}"/>`;
+      x = x2;
+    }
+  });
+  return `<svg viewBox="0 0 ${w} ${h}" shape-rendering="crispEdges" aria-hidden="true" focusable="false">${out}</svg>`;
+}
+
+const ICONS = {
+  sobre: [
+    '................', '......####......', '.....######.....', '....########....',
+    '....########....', '....########....', '.....######.....', '......####......',
+    '................', '...##########...', '..############..', '.##############.',
+    '.######oo######.', '.######oo######.', '.##############.', '................'],
+  experiencia: [
+    '................', '................', '.....######.....', '.....#....#.....',
+    '.##############.', '.##############.', '.##..........##.', '.##..........##.',
+    '.######oo######.', '.##....oo....##.', '.##..........##.', '.##..........##.',
+    '.##############.', '.##############.', '................', '................'],
+  pesquisa: [
+    '................', '...######.......', '..##....##......', '.##.oo...##.....',
+    '.#.oo.....#.....', '.#.o......#.....', '.#........#.....', '.##......##.....',
+    '..##....###.....', '...######.#.....', '..........###...', '...........###..',
+    '............###.', '.............##.', '................', '................'],
+  skills: [
+    '................', '....#.#..#.#....', '....#.#..#.#....', '..############..',
+    '###..........###', '..#.########.#..', '###.#......#.###', '..#.#.oooo.#.#..',
+    '..#.#.oooo.#.#..', '###.#......#.###', '..#.########.#..', '###..........###',
+    '..############..', '....#.#..#.#....', '....#.#..#.#....', '................'],
+  formacao: [
+    '................', '................', '.......##.......', '.....######.....',
+    '...##########...', '.##############.', '...##########.#.', '.....######...#.',
+    '....########..#.', '....########..#.', '.....######..ooo', '.............ooo',
+    '................', '................', '................', '................'],
+  contato: [
+    '................', '................', '................', '.##############.',
+    '.###........###.', '.#.##......##.#.', '.#..##....##..#.', '.#...##..##...#.',
+    '.#....####....#.', '.#............#.', '.#............#.', '.#..........oo#.',
+    '.##############.', '................', '................', '................'],
+  terminal: [
+    '................', '.##############.', '.#............#.', '.#.o..........#.',
+    '.#..o.........#.', '.#...o........#.', '.#..o.........#.', '.#.o...oooo...#.',
+    '.#............#.', '.#............#.', '.##############.', '......####......',
+    '....########....', '................', '................', '................'],
+  cv: [
+    '................', '.#############..', '.##.#######.###.', '.##.#...oo#.####',
+    '.##.#...oo#.####', '.##.######..####', '.##.........####', '.###############',
+    '.##..........###', '.##.oooooooo.###', '.##..........###', '.##.oooooooo.###',
+    '.##..........###', '.###############', '................', '................'],
+  theme: [
+    '....####....', '..##..####..', '.#....#####.', '.#....#####.', '#.....######', '#.....######',
+    '#.....######', '#.....######', '.#....#####.', '.#....#####.', '..##..####..', '....####....'],
+  soundOn: [
+    '............', '.....#......', '....##...#..', '...###....#.', '####.#..#..#', '#..#.#...#.#',
+    '#..#.#...#.#', '####.#..#..#', '...###....#.', '....##...#..', '.....#......', '............'],
+  soundOff: [
+    '............', '.....#......', '....##......', '...###......', '####.#.#...#', '#..#.#..#.#.',
+    '#..#.#...#..', '####.#..#.#.', '...###.#...#', '....##......', '.....#......', '............'],
+  crt: [
+    '############', '#..........#', '#.########.#', '#..........#', '#.########.#', '#..........#',
+    '#.########.#', '#..........#', '############', '....####....', '..########..', '............'],
+  bit: [
+    '....................', '.##################.', '.#................#.', '.#.##############.#.',
+    '.#.#ssssssssssss#.#.', '.#.#ssEEssssEEss#.#.', '.#.#sseesssseess#.#.', '.#.#ssssssssssss#.#.',
+    '.#.#ssssossossss#.#.', '.#.#sssssoosssss#.#.', '.#.##############.#.', '.#................#.',
+    '.#..........o.##..#.', '.##################.', '.......######.......', '.....##########.....']
+};
+
+/* ---------------- sons: cliques de computador antigo (Web Audio, nada de arquivos) ---------------- */
+const SFX = {
+  ctx: null, buf: null,
+  on: store.get('ock-sound', 'on') === 'on',
+  init() {
+    this.ctx = this.ctx || new (window.AudioContext || window.webkitAudioContext)();
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+    if (!this.buf) {
+      const n = Math.floor(this.ctx.sampleRate * .25), b = this.ctx.createBuffer(1, n, this.ctx.sampleRate), d = b.getChannelData(0);
+      for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
+      this.buf = b;
+    }
+  },
+  // um "tique": estalo de ruído filtrado + baque grave opcional (o corpo da tecla/chave)
+  tick({ f = 2500, q = 1.5, dur = .022, vol = .2, thump = 0, at = 0 } = {}) {
+    if (!this.on) return;
+    try {
+      this.init();
+      const c = this.ctx, t = c.currentTime + at;
+      const src = c.createBufferSource(), bp = c.createBiquadFilter(), g = c.createGain();
+      src.buffer = this.buf; bp.type = 'bandpass'; bp.frequency.value = f; bp.Q.value = q;
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .001); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+      src.connect(bp).connect(g).connect(c.destination);
+      src.start(t, Math.random() * .2); src.stop(t + dur + .02);
+      if (thump) {
+        const o = c.createOscillator(), og = c.createGain();
+        o.type = 'sine'; o.frequency.setValueAtTime(thump, t); o.frequency.exponentialRampToValueAtTime(thump * .5, t + .05);
+        og.gain.setValueAtTime(vol * .7, t); og.gain.exponentialRampToValueAtTime(.0001, t + .06);
+        o.connect(og).connect(c.destination); o.start(t); o.stop(t + .08);
+      }
+    } catch (e) {}
+  },
+  key()   { this.tick({ f: 3200 + Math.random() * 900, q: 2.2, dur: .016, vol: .14, thump: 150 + Math.random() * 30 }); },
+  click() { this.tick({ f: 2400, q: 1.8, dur: .02, vol: .2, thump: 120 }); },
+  open()  { this.tick({ f: 1700, q: 1.4, dur: .03, vol: .24, thump: 100 }); this.tick({ f: 3400, q: 2.5, dur: .016, vol: .14, at: .055 }); },
+  close() { this.tick({ f: 3400, q: 2.5, dur: .016, vol: .14 }); this.tick({ f: 1500, q: 1.4, dur: .03, vol: .22, thump: 85, at: .05 }); },
+  err()   { this.tick({ f: 800, q: 1, dur: .05, vol: .26, thump: 70 }); this.tick({ f: 800, q: 1, dur: .05, vol: .26, thump: 70, at: .1 }); },
+  boot()  { this.tick({ f: 600, q: .7, dur: .09, vol: .3, thump: 55 }); for (let i = 0; i < 6; i++) this.tick({ f: 2000 + Math.random() * 1800, q: 3, dur: .012, vol: .08, at: .18 + i * .07 + Math.random() * .03 }); }
+};
+
+/* ---------------- renderizadores das janelas ---------------- */
+function chips(list, label) {
+  return `<div class="chips">${label ? `<span class="chip-label">${esc(label)}</span>` : ''}${list.map(i => `<span class="chip">${esc(i)}</span>`).join('')}</div>`;
+}
+const cmd = c => `<p class="cmd"><span class="ps1">$</span>${esc(c)}</p>`;
+const bar = (n, total, on = '█', off = '░') => `${on.repeat(n)}<span class="off">${off.repeat(total - n)}</span>`;
+
+function renderSobre() {
+  return `
+  <div class="about-head">
+    <div class="avatar" aria-hidden="true"><span>${esc(CV.iniciais)}</span></div>
+    <div>
+      <h2 class="name">${esc(CV.nome)}</h2>
+      <p class="role">${esc(CV.cargo)} · ${esc(CV.empresa)}</p>
+      <p class="role dim">Eng. da Computação · Instituto Mauá de Tecnologia</p>
+    </div>
+  </div>
+  <hr>
+  ${cmd('cat perfil.txt')}
+  <p style="margin:0">${md(CV.perfil)}</p>
+  ${cmd('locale --idiomas')}
+  <div class="langs">${CV.idiomas.map(l => `<span>${esc(l.lingua)}</span><span class="bar" aria-label="${l.pontos} de 5">${bar(l.pontos, 5, '■', '■')}</span><span class="dim">${esc(l.nivel)}</span>`).join('')}</div>`;
+}
+
+function renderExp() {
+  const items = CV.experiencia.map(e => `
+    <li class="commit">
+      <span class="node" aria-hidden="true">*</span>
+      <div class="c-head"><span class="hash">${hash7(e.cargo + e.periodo)}</span> <span class="ref">(${esc(e.refs)})</span></div>
+      <h3>${esc(e.cargo)}</h3>
+      <div class="meta">${esc(e.empresa)} · ${esc(e.periodo)}</div>
+      <ul class="diff">${e.bullets.map(b => `<li>${md(b)}</li>`).join('')}</ul>
+      ${e.sistemas ? chips(e.sistemas, 'sistemas:') : ''}
+      ${e.stack ? chips(e.stack, 'stack:') : ''}
+    </li>`).join('');
+  return `${cmd('git log --graph carreira')}
+  <ol class="gitlog">${items}
+    <li class="commit root">
+      <span class="node" aria-hidden="true">*</span>
+      <div class="c-head"><span class="hash">${hash7('init')}</span> initial commit — Eng. da Computação @ Instituto Mauá (2022)</div>
+    </li>
+  </ol>`;
+}
+
+function wheatScene() {
+  const W = 64, ground = 20;
+  let r = '';
+  const put = (rows, ox, oy, map) => rows.forEach((row, y) => [...row].forEach((c, x) => {
+    if (map[c]) r += `<rect x="${ox + x}" y="${oy + y}" width="1" height="1" class="${map[c]}"/>`;
+  }));
+  const stalk = h => ['..o..', '.o.o.', '..o..', '.o.o.', '..o..', '.o.o.'].concat(Array(h - 6).fill('..#..'));
+  const xs = [0, 5, 10, 15, 20, 41, 46, 51, 55, 59], hs = [12, 14, 11, 13, 12, 13, 11, 14, 12, 13];
+  xs.forEach((x, i) => put(stalk(hs[i]), x, ground - hs[i] + 1, { o: 'g', '#': 'st' }));
+  put(stalk(14), 30, ground - 13, { o: 'g', '#': 'st' });
+  put(['.#...#.', '..###..', '.#####.', '#.###.#', '.#.#.#.'], 29, 10, { '#': 'bug' });
+  return `<svg viewBox="0 0 ${W} 22" shape-rendering="crispEdges" role="img" aria-label="Ilustração: uma praga detectada numa plantação de trigo">
+    ${r}<rect x="0" y="21" width="${W}" height="1" class="st"/>
+    <rect x="27.5" y="8.5" width="11" height="7.5" class="bbox"/>
+    <rect x="27.5" y="5.4" width="9.6" height="3.1" class="lbl"/>
+    <text x="28.2" y="7.75" class="lbl-t">praga</text>
+    <rect class="scan" x="0" y="0" width=".6" height="21"><animate attributeName="x" values="0;63.4;0" dur="5s" repeatCount="indefinite"/></rect>
+  </svg>`;
+}
+
+function carScene() {
+  const W = 64;
+  let r = '';
+  const put = (rows, ox, oy, map) => rows.forEach((row, y) => [...row].forEach((c, x) => {
+    if (map[c]) r += `<rect x="${ox + x}" y="${oy + y}" width="1" height="1" class="${map[c]}"/>`;
+  }));
+  for (let x = 2; x < 30; x += 4) for (let y = 6; y < 20; y += 4) r += `<rect x="${x}" y="${y}" width=".5" height=".5" class="st"/>`;
+  for (let y = 1; y < 21; y += 2) if (y < 4 || y > 10) r += `<rect x="32" y="${y}" width=".4" height="1" class="st"/>`;
+  const car = ['........oo......', '.....#######....', '....#...#...#...', '...#....#....#..', '.##############.',
+               '################', '################', '..####....####..', '...##......##...'];
+  put(car, 7, 12, { '#': 'wire', o: 'wire' });
+  put(car, 40, 12, { '#': 'bug', o: 'p' });
+  put(['......#...', '......##..', '#########.', '......##..', '......#...'], 27, 5, { '#': 'p' });
+  return `<svg viewBox="0 0 ${W} 22" shape-rendering="crispEdges" role="img" aria-label="Ilustração: carro virtual (gêmeo digital) e carro físico com LiDAR">
+    ${r}<rect x="0" y="21" width="${W}" height="1" class="st"/>
+    <line x1="49" y1="12.5" x2="63.5" y2="6" class="ray"/><line x1="49" y1="12.5" x2="63.5" y2="10" class="ray"/><line x1="49" y1="12.5" x2="63.5" y2="14" class="ray"/>
+    <text x="2" y="3.8" class="tl">virtual</text><text x="44" y="3.8" class="tl tp">físico</text>
+  </svg>`;
+}
+
+const SCENES = { trigo: wheatScene, carro: carScene };
+function renderPesquisa() {
+  return CV.pesquisa.map((p, i) => `
+    ${i ? '<hr>' : ''}
+    ${cmd('cat pesquisa/' + (p.arquivo || 'projeto.md'))}
+    ${SCENES[p.cena] ? `<div class="scene">${SCENES[p.cena]()}</div><p class="caption">fig. ${i + 1} — ${esc(p.legenda || '')} (ilustração)</p>` : ''}
+    <h3 class="p-title">${esc(p.titulo)}</h3>
+    <div class="meta">${esc(p.local)} · ${esc(p.periodo)}</div>
+    <ul class="diff">${p.bullets.map(b => `<li>${md(b)}</li>`).join('')}</ul>
+    ${p.stack ? chips(p.stack, 'stack:') : ''}`).join('');
+}
+
+function renderSkills() {
+  const n = CV.skills.length, total = CV.skills.reduce((a, s) => a + s.itens.length, 0);
+  return `${cmd('tree ~/skills')}
+  <div class="tree">
+    <div class="root">~/skills</div>
+    ${CV.skills.map((s, i) => `
+      <div class="dir${i === n - 1 ? ' last' : ''}">
+        <span class="branch" aria-hidden="true">${i === n - 1 ? '└──' : '├──'}</span>
+        <span class="dname">${esc(s.cat)}/</span>
+        ${chips(s.itens)}
+      </div>`).join('')}
+    <div class="tree-sum">${n} diretórios, ${total} arquivos</div>
+  </div>`;
+}
+
+function eduProgress(e) {
+  if (!e.inicio || !e.fim) return '';
+  const a = new Date(e.inicio).getTime(), b = new Date(e.fim).getTime();
+  const pct = clamp((Date.now() - a) / (b - a), 0, 1);
+  const n = Math.round(pct * 24);
+  return `<div class="progress" aria-label="Progresso do curso: ${Math.round(pct * 100)}%">[${bar(n, 24)}] ${pct >= 1 ? 'concluído' : Math.round(pct * 100) + '%'}</div>`;
+}
+
+function renderFormacao() {
+  return `${cmd('cat formacao.txt')}
+  ${CV.formacao.map(e => `
+    <div class="edu">
+      <h3>${esc(e.curso)}</h3>
+      <div class="meta">${esc(e.local)} · ${esc(e.periodo)}</div>
+      ${eduProgress(e)}
+    </div>`).join('')}
+  ${cmd('ls ~/conquistas')}
+  <ul class="ach">${CV.certificacoes.map(c => `
+    <li><span class="badge" aria-hidden="true">[✓]</span><div><div class="t">${esc(c.nome)}</div><div class="s">${esc(c.detalhe)}</div></div></li>`).join('')}
+  </ul>`;
+}
+
+function renderContato() {
+  return `${cmd('finger ' + CV.apelido)}
+  <dl class="finger">
+    <dt>Login:</dt><dd>${esc(CV.apelido)}</dd>
+    <dt>Nome:</dt><dd>${esc(CV.nome)}</dd>
+    <dt>E-mail:</dt><dd><a href="mailto:${esc(CV.email)}">${esc(CV.email)}</a></dd>
+    <dt>LinkedIn:</dt><dd><a href="${esc(CV.linkedin)}" target="_blank" rel="noopener">${esc(linkLabel(CV.linkedin))}</a></dd>
+    <dt>GitHub:</dt><dd><a href="${esc(CV.github)}" target="_blank" rel="noopener">${esc(linkLabel(CV.github))}</a></dd>
+    <dt>Plan:</dt><dd>${esc(CV.plano)}</dd>
+  </dl>
+  <div class="btns">
+    <a class="btn" href="mailto:${esc(CV.email)}">[ enviar e-mail ]</a>
+    <button class="btn" type="button" id="copy-email">[ copiar e-mail ]</button>
+    <a class="btn" href="${esc(CV.cvPdf)}" target="_blank" rel="noopener">[ baixar cv.pdf ]</a>
+  </div>`;
+}
+
+function renderTerminal() {
+  return `<div class="term-out" id="term-out" aria-live="polite"></div>
+  <div class="term-line" id="term-line"><span class="ps1">${esc(CV.apelido)}@portfolio:<span class="path">~</span>$</span> <span id="ti-a"></span><span id="ti-c" class="term-cursor blink"> </span><span id="ti-b"></span><input id="term-input" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="send" aria-label="Digite um comando do terminal"></div>`;
+}
+
+function renderHome() {
+  const icon = (id, label) => `<button class="icon" type="button" data-open="${id}">${pix(ICONS[id])}<span>${esc(label)}</span></button>`;
+  return `
+  <div class="home">
+    <h1 class="hello">olá! <span class="pri">eu sou o ${esc(CV.apelido)}</span></h1>
+    <p class="typed"><span class="dim">&gt;</span> <span id="typed"></span><span class="cursor-block" aria-hidden="true"></span></p>
+    <nav class="icons" aria-label="Seções">
+      ${Object.entries(WINDOWS).map(([id, w]) => icon(id, w.label)).join('')}
+      <button class="icon" type="button" data-cv>${pix(ICONS.cv)}<span>cv.pdf</span></button>
+    </nav>
+    <p class="home-tip dim">dica: <span class="hide-m">arraste as janelas pela barra · </span>abra o <button class="linkish" type="button" data-open="terminal">terminal</button> e digite <kbd>help</kbd></p>
+  </div>`;
+}
+
+const WINDOWS = {
+  sobre:       { title: 'sobre.txt',       label: 'sobre',       w: 660, render: renderSobre },
+  experiencia: { title: 'experiencia.log', label: 'experiência', w: 720, render: renderExp },
+  pesquisa:    { title: 'pesquisa.md',     label: 'pesquisa',    w: 660, render: renderPesquisa },
+  skills:      { title: 'skills/',         label: 'skills',      w: 700, render: renderSkills },
+  formacao:    { title: 'formacao.txt',    label: 'formação',    w: 660, render: renderFormacao },
+  contato:     { title: 'contato.vcf',     label: 'contato',     w: 620, render: renderContato },
+  terminal:    { title: 'terminal — zsh',  label: 'terminal',    w: 720, h: 470, render: renderTerminal }
+};
+
+/* ---------------- gerenciador de janelas ---------------- */
+const desktop = $('#desktop');
+let zTop = 10, openCount = 0;
+const openOrder = [];
+
+function makeWindow(id, title, html, opts = {}) {
+  const win = document.createElement('section');
+  win.className = 'win';
+  win.id = 'win-' + id;
+  win.dataset.win = id;
+  win.setAttribute('role', 'dialog');
+  win.setAttribute('aria-labelledby', 't-' + id);
+  win.tabIndex = -1;
+  win.style.setProperty('--w', (opts.w || 680) + 'px');
+  if (opts.h) win.style.height = `min(${opts.h}px, calc(100% - 28px))`;
+  win.innerHTML = `
+    <header class="win-bar">
+      <span class="win-title" id="t-${id}">${esc(title)}</span>
+      ${opts.noClose ? '' : `<button class="win-close" type="button" aria-label="Fechar ${esc(title)}">[x]</button>`}
+    </header>
+    <div class="win-body">${html}</div>`;
+  if (!opts.noClose) win.hidden = true;
+  desktop.insertBefore(win, $('#mascot'));
+  win.addEventListener('pointerdown', () => focusWin(win));
+  const close = $('.win-close', win);
+  if (close) close.addEventListener('click', e => { e.stopPropagation(); closeWin(id); });
+  enableDrag(win);
+  return win;
+}
+
+function focusWin(win) {
+  if (!win || win.hidden) return;
+  if (!win.classList.contains('active')) {
+    $$('.win.active').forEach(w => w.classList.remove('active'));
+    win.classList.add('active');
+  }
+  if (+win.style.zIndex !== zTop) win.style.zIndex = ++zTop;
+  renderTasks();
+}
+
+function placeWin(win) {
+  const dw = desktop.clientWidth, dh = desktop.clientHeight;
+  const w = win.offsetWidth, h = win.offsetHeight;
+  const off = (openCount++ % 6) * 30;
+  const x = clamp((dw - w) / 2 + off - 60, 10, Math.max(10, dw - w - 10));
+  const y = clamp(Math.max(dh * 0.09, 56) + off, 10, Math.max(10, dh - h - 10));
+  win.style.left = x + 'px'; win.style.top = y + 'px';
+  win.dataset.placed = '1';
+}
+
+function openWin(id) {
+  const win = $('#win-' + id);
+  if (!win) return;
+  if (!win.hidden) { focusWin(win); pulse(win); return; }
+  win.hidden = false;
+  if (!win.dataset.placed || isMobile()) placeWin(win);
+  if (!openOrder.includes(id)) openOrder.push(id);
+  win.classList.remove('closing');
+  if (!reduceMotion) { win.classList.add('opening'); win.addEventListener('animationend', () => win.classList.remove('opening'), { once: true }); }
+  focusWin(win);
+  SFX.open();
+  if (id === 'terminal') setTimeout(() => termFocus(), 60);
+  else win.focus({ preventScroll: true });
+}
+
+function closeWin(id) {
+  const win = $('#win-' + id);
+  if (!win || win.hidden || id === 'home') return;
+  if (id === 'terminal' && game) game.stop(true);
+  SFX.close();
+  const done = () => {
+    win.hidden = true; win.classList.remove('closing', 'active');
+    const i = openOrder.indexOf(id); if (i > -1) openOrder.splice(i, 1);
+    const next = $$('.win:not([hidden])').sort((a, b) => (+b.style.zIndex || 0) - (+a.style.zIndex || 0))[0];
+    if (next) focusWin(next); else renderTasks();
+  };
+  if (reduceMotion) return done();
+  win.classList.add('closing');
+  win.addEventListener('animationend', done, { once: true });
+}
+
+function pulse(win) {
+  if (reduceMotion) return;
+  win.animate([{ filter: 'brightness(1.8)' }, { filter: 'brightness(1)' }], { duration: 220, easing: 'steps(3)' });
+}
+
+function enableDrag(win) {
+  const bar = $('.win-bar', win);
+  bar.addEventListener('pointerdown', e => {
+    if (e.button !== 0 || isMobile() || e.target.closest('.win-close')) return;
+    focusWin(win);
+    const r = win.getBoundingClientRect(), d = desktop.getBoundingClientRect();
+    const ox = e.clientX - r.left, oy = e.clientY - r.top;
+    bar.setPointerCapture(e.pointerId);
+    win.classList.add('dragging');
+    const move = ev => {
+      const x = clamp(ev.clientX - d.left - ox, 80 - r.width, d.width - 80);
+      const y = clamp(ev.clientY - d.top - oy, 0, d.height - 40);
+      win.style.left = x + 'px'; win.style.top = y + 'px';
+      win.dataset.moved = '1';
+    };
+    const up = () => {
+      win.classList.remove('dragging');
+      bar.removeEventListener('pointermove', move);
+      bar.removeEventListener('pointerup', up);
+      bar.removeEventListener('pointercancel', up);
+    };
+    bar.addEventListener('pointermove', move);
+    bar.addEventListener('pointerup', up);
+    bar.addEventListener('pointercancel', up);
+  });
+}
+
+function renderTasks() {
+  const ids = ['home', ...openOrder];
+  $('#tasks').innerHTML = ids.map((id, i) => {
+    const win = $('#win-' + id);
+    const label = id === 'home' ? 'home' : WINDOWS[id].label;
+    const act = win && win.classList.contains('active');
+    return `<button class="task${act ? ' active' : ''}" type="button" data-focus="${id}" aria-current="${act}">${i}:${esc(label)}${act ? '*' : ''}</button>`;
+  }).join('');
+}
+
+function centerHome() {
+  const home = $('#win-home');
+  if (home.dataset.moved && !isMobile()) return;
+  const dw = desktop.clientWidth, dh = desktop.clientHeight;
+  home.style.left = Math.max(10, (dw - home.offsetWidth) / 2) + 'px';
+  home.style.top = clamp((dh - home.offsetHeight) / 2 - 10, 58, Math.max(58, dh * 0.2)) + 'px';
+}
+
+function keepInView() {
+  const d = desktop.getBoundingClientRect();
+  $$('.win:not([hidden])').forEach(w => {
+    if (w.id === 'win-home' || isMobile()) return;
+    const l = parseFloat(w.style.left) || 0, t = parseFloat(w.style.top) || 0;
+    w.style.left = clamp(l, 80 - w.offsetWidth, d.width - 80) + 'px';
+    w.style.top = clamp(t, 0, d.height - 40) + 'px';
+  });
+}
+
+/* ---------------- terminal ---------------- */
+let tIn, tOut, tA, tB, tC;
+const tHist = []; let tHi = 0;
+
+function termFocus() { if (tIn) tIn.focus({ preventScroll: true }); }
+function termScroll() { const body = $('#win-terminal .win-body'); body.scrollTop = body.scrollHeight; }
+function print(html = '', cls = '') {
+  const div = document.createElement('div');
+  if (cls) div.className = cls;
+  div.innerHTML = html;
+  tOut.appendChild(div);
+  termScroll();
+}
+function syncInput() {
+  const v = tIn.value, p = tIn.selectionStart ?? v.length;
+  tA.textContent = v.slice(0, p);
+  tC.textContent = v[p] || ' ';
+  tB.textContent = v.slice(p + 1);
+  termScroll();
+}
+const ps1 = () => `<span class="ps1">${esc(CV.apelido)}@portfolio:<span class="path">~</span>$</span> `;
+
+const FILES = {
+  'sobre.txt': 'sobre', 'experiencia.log': 'experiencia', 'pesquisa.md': 'pesquisa',
+  'formacao.txt': 'formacao', 'contato.vcf': 'contato', 'skills/': null, 'curriculo.pdf': null
+};
+
+const TXT = {
+  sobre: () => `<b>${esc(CV.nome)}</b>\n${esc(CV.cargo)} · ${esc(CV.empresa)}\n\n${md(CV.perfil)}`,
+  experiencia: () => CV.experiencia.map(e =>
+    `<span class="pri">▸ ${esc(e.cargo)}</span> <span class="dim">(${esc(e.periodo)})</span>\n  ${esc(e.empresa)}\n${e.bullets.map(b => `  <span class="pri">+</span> ${md(b)}`).join('\n')}`).join('\n\n'),
+  pesquisa: () => CV.pesquisa.map(p =>
+    `<span class="pri">▸ ${esc(p.titulo)}</span> <span class="dim">(${esc(p.periodo)})</span>\n  ${esc(p.local)}\n${p.bullets.map(b => `  <span class="pri">+</span> ${md(b)}`).join('\n')}`).join('\n\n'),
+  skills: () => CV.skills.map(s => `<span class="pri">${esc(s.cat.padEnd(28, ' '))}</span>${esc(s.itens.join(', '))}`).join('\n'),
+  formacao: () => CV.formacao.map(e => `<span class="pri">▸ ${esc(e.curso)}</span>\n  ${esc(e.local)} · ${esc(e.periodo)}`).join('\n') +
+    '\n\n<span class="dim">certificações:</span>\n' + CV.certificacoes.map(c => `  [✓] ${esc(c.nome)} <span class="dim">— ${esc(c.detalhe)}</span>`).join('\n'),
+  contato: () => `e-mail    <a href="mailto:${esc(CV.email)}">${esc(CV.email)}</a>\nlinkedin  <a href="${esc(CV.linkedin)}" target="_blank" rel="noopener">${esc(linkLabel(CV.linkedin))}</a>\ngithub    <a href="${esc(CV.github)}" target="_blank" rel="noopener">${esc(linkLabel(CV.github))}</a>`
+};
+
+const HELP = [
+  ['help', 'mostra esta ajuda'],
+  ['sobre', 'quem é o ' + CV.apelido],
+  ['experiencia', 'histórico profissional'],
+  ['pesquisa', 'iniciação científica'],
+  ['skills', 'tecnologias e ferramentas'],
+  ['formacao', 'formação e certificações'],
+  ['contato', 'como falar comigo'],
+  ['open &lt;janela&gt;', 'abre uma janela (ex: open skills)'],
+  ['cv', 'abre o currículo em PDF'],
+  ['ls · cat &lt;arquivo&gt;', 'explora os arquivos'],
+  ['neofetch', 'informações do sistema'],
+  ['theme &lt;branco|verde|azul&gt;', 'troca o tema'],
+  ['sound &lt;on|off&gt;', 'efeitos sonoros'],
+  ['crt &lt;on|off&gt;', 'efeito de tubo (scanlines)'],
+  ['clear', 'limpa a tela'],
+  ['exit', 'fecha o terminal']
+];
+
+function neofetch() {
+  const logo = [
+    ' ██████   ██████ ██   ██',
+    '██    ██ ██      ██  ██ ',
+    '██    ██ ██      █████  ',
+    '██    ██ ██      ██  ██ ',
+    ' ██████   ██████ ██   ██'
+  ].join('\n');
+  const langs = CV.skills[0].itens.slice(0, 3).join(' · ').toLowerCase();
+  const editores = ((CV.skills.find(s => s.cat === 'editores') || {}).itens || []).join(' · ').toLowerCase();
+  const rows = [
+    ['os', 'OttoOS 2026 (retro edition)'],
+    ['host', CV.empresa],
+    ['cargo', CV.cargo],
+    ['kernel', 'Eng. da Computação @ Mauá'],
+    ['shell', langs],
+    ['infra', 'docker · kubernetes · aws'],
+    ['editores', editores],
+    ['idiomas', CV.idiomas.map(l => l.lingua.slice(0, 2)).join(' · ')],
+    ['tema', document.documentElement.dataset.theme]
+  ];
+  return `<div class="neo"><pre aria-hidden="true">${logo}</pre><div><b>${esc(CV.apelido)}</b>@<b>portfolio</b>\n<span class="dim">-----------------</span>\n${rows.map(([k, v]) => `<span class="k">${k}</span>: ${esc(v)}`).join('\n')}\n<span class="swatches">${['--pri', '--fg', '--dim', '--line-strong', '--win-2', '#ff6b6b', '#6cb6ff', '#d9c24a'].map(c => `<i style="background:${c.startsWith('--') ? `var(${c})` : c}"></i>`).join('')}</span></div></div>`;
+}
+
+const COMMANDS = {
+  help: () => print(`<div class="t-help">${HELP.map(([c, d]) => `<span class="c">${c}</span><span>${d}</span>`).join('')}</div>`),
+  sobre: () => print(TXT.sobre()),
+  experiencia: () => print(TXT.experiencia()),
+  pesquisa: () => print(TXT.pesquisa()),
+  skills: () => print(TXT.skills()),
+  formacao: () => print(TXT.formacao()),
+  contato: () => print(TXT.contato()),
+  open: a => {
+    const id = norm(a[0] || '').replace(/\.(txt|log|md|vcf)$|\/$/, '');
+    if (id === 'cv' || id === 'curriculo.pdf' || id === 'curriculo') return COMMANDS.cv();
+    if (!WINDOWS[id] || id === 'terminal') return print(`open: janela desconhecida: ${esc(a[0] || '')}. opções: ${Object.keys(WINDOWS).filter(k => k !== 'terminal').join(', ')}`, 't-err');
+    openWin(id); print(`<span class="dim">abrindo ${esc(WINDOWS[id].title)}…</span>`);
+  },
+  cv: () => { window.open(CV.cvPdf, '_blank', 'noopener'); print('<span class="dim">abrindo ' + esc(CV.cvPdf) + '…</span>'); },
+  ls: a => {
+    const t = norm(a.filter(x => !x.startsWith('-'))[0] || '');
+    if (t.replace(/\/$/, '') === 'skills') return print(`<div class="t-cols">${CV.skills.map(s => `<span class="t-dir">${esc(s.cat)}/</span>`).join('')}</div>`);
+    if (t && t !== '~' && t !== '.') return print(`ls: não foi possível acessar '${esc(t)}': arquivo ou diretório inexistente`, 't-err');
+    print(`<div class="t-cols">${Object.keys(FILES).map(f => f.endsWith('/') ? `<span class="t-dir">${f}</span>` : `<span>${f}</span>`).join('')}</div>`);
+  },
+  cat: a => {
+    if (!a[0]) return print('cat: informe um arquivo. tente: ls', 't-err');
+    const f = norm(a[0]);
+    if (f.replace(/\/$/, '') === 'skills') return print('cat: skills/: é um diretório. tente: ls skills  ou  skills', 't-err');
+    if (f === 'curriculo.pdf') return print('cat: curriculo.pdf: arquivo binário. use o comando <span class="pri">cv</span> para abrir.', 't-err');
+    const key = FILES[f] || FILES[f + '.txt'] || FILES[f + '.log'] || FILES[f + '.md'] || FILES[f + '.vcf'];
+    if (!key) return print(`cat: ${esc(a[0])}: arquivo ou diretório inexistente`, 't-err');
+    print(TXT[key]());
+  },
+  whoami: () => print('visitante  <span class="dim">(mas o dono daqui é o ' + esc(CV.apelido) + ' — digite <span class="pri">sobre</span>)</span>'),
+  neofetch: () => print(neofetch()),
+  theme: a => {
+    let t = norm(a[0] || '');
+    t = THEME_ALIAS[t] || t;
+    if (!THEMES.includes(t)) return print(`uso: theme &lt;${THEMES.join('|')}&gt; · atual: ${document.documentElement.dataset.theme}`);
+    setTheme(t); print(`tema alterado para <span class="pri">${t}</span>`);
+  },
+  sound: a => {
+    const v = norm(a[0] || '');
+    if (v !== 'on' && v !== 'off') return print(`uso: sound &lt;on|off&gt; · atual: ${SFX.on ? 'on' : 'off'}`);
+    setSound(v === 'on'); print(`sons: ${v}`);
+  },
+  crt: a => {
+    const v = norm(a[0] || '');
+    if (v !== 'on' && v !== 'off') return print(`uso: crt &lt;on|off&gt; · atual: ${document.body.classList.contains('no-crt') ? 'off' : 'on'}`);
+    setCrt(v === 'on'); print(`efeito CRT: ${v}`);
+  },
+  clear: () => { tOut.innerHTML = ''; },
+  history: () => print(tHist.map((h, i) => `${String(i + 1).padStart(4, ' ')}  ${esc(h)}`).join('\n') || '<span class="dim">(vazio)</span>'),
+  date: () => print(new Date().toLocaleString('pt-BR', { dateStyle: 'full', timeStyle: 'medium' })),
+  echo: a => print(esc(a.join(' '))),
+  pwd: () => print('/home/' + esc(CV.apelido)),
+  exit: () => closeWin('terminal'),
+  email: () => { location.href = 'mailto:' + CV.email; print('<span class="dim">abrindo seu cliente de e-mail…</span>'); },
+  github: () => { window.open(CV.github, '_blank', 'noopener'); print('<span class="dim">abrindo github…</span>'); },
+  linkedin: () => { window.open(CV.linkedin, '_blank', 'noopener'); print('<span class="dim">abrindo linkedin…</span>'); },
+  sudo: () => { SFX.err(); print('visitante não está no arquivo sudoers. este incidente será reportado. ;)', 't-err'); },
+  rm: a => { if (a.join(' ').includes('-rf')) { SFX.err(); print('rm: boa tentativa. esse portfólio tem backup em disquete. :P', 't-err'); } else print('rm: operação não permitida', 't-err'); },
+  vim: () => print('<span class="dim">abrindo o vim… brincadeira. aqui você não fica preso: <span class="pri">:q</span></span>'),
+  ping: () => print('PING portfolio (127.0.0.1): 56 bytes\n64 bytes: icmp_seq=0 ttl=64 time=0.042 ms\n--- 1 pacote transmitido, 1 recebido, 0% de perda ---'),
+  snake: () => snake(),
+  oi: () => print('oi! :) digite <span class="pri">help</span> pra ver o que dá pra fazer por aqui.'),
+  man: a => print(a[0] ? `não há entrada de manual para ${esc(a[0])}. tente: help` : 'qual página de manual você quer? tente: help')
+};
+const ALIASES = {
+  about: 'sobre', experience: 'experiencia', exp: 'experiencia', research: 'pesquisa', formation: 'formacao',
+  education: 'formacao', contact: 'contato', ola: 'oi', hello: 'oi', hi: 'oi', nvim: 'vim', vi: 'vim',
+  cobrinha: 'snake', cobra: 'snake', jogo: 'snake', game: 'snake',
+  ':q': 'exit', ':wq': 'exit', quit: 'exit', cls: 'clear', dir: 'ls', curriculo: 'cv', resume: 'cv', mail: 'email'
+};
+
+function runCommand(raw) {
+  const line = raw.trim();
+  print(ps1() + esc(raw), 'echo');
+  if (!line) return;
+  tHist.push(line); tHi = tHist.length;
+  const [c0, ...args] = line.split(/\s+/);
+  let c = norm(c0);
+  c = ALIASES[c] || c;
+  const fn = COMMANDS[c];
+  if (fn) { try { fn(args); } catch (e) { print('erro: ' + esc(e.message), 't-err'); } }
+  else { SFX.err(); print(`zsh: comando não encontrado: ${esc(c0)}  <span class="dim">— digite <span class="pri">help</span></span>`, 't-err'); }
+}
+
+function complete() {
+  const v = tIn.value, parts = v.split(/\s+/);
+  let pool, last;
+  if (parts.length <= 1) { pool = Object.keys(COMMANDS); last = parts[0] || ''; }
+  else {
+    last = parts[parts.length - 1];
+    const c = norm(parts[0]);
+    pool = c === 'open' ? Object.keys(WINDOWS).filter(k => k !== 'terminal').concat('cv')
+      : c === 'cat' || c === 'ls' ? Object.keys(FILES)
+      : c === 'theme' ? THEMES : (c === 'sound' || c === 'crt') ? ['on', 'off'] : [];
+  }
+  const m = pool.filter(p => p.startsWith(norm(last)));
+  if (m.length === 1) {
+    parts[parts.length - 1] = m[0];
+    tIn.value = parts.join(' ') + (m[0].endsWith('/') ? '' : ' ');
+  } else if (m.length > 1) {
+    print(ps1() + esc(v), 'echo');
+    print(`<div class="t-cols">${m.map(x => `<span>${esc(x)}</span>`).join('')}</div>`);
+  }
+  tIn.setSelectionRange(tIn.value.length, tIn.value.length);
+  syncInput();
+}
+
+function initTerminal() {
+  tIn = $('#term-input'); tOut = $('#term-out'); tA = $('#ti-a'); tB = $('#ti-b'); tC = $('#ti-c');
+  const body = $('#win-terminal .win-body');
+  body.addEventListener('mouseup', () => { if (game && isTouch()) return; if (!String(getSelection())) termFocus(); });
+  ['input', 'keyup', 'click', 'select'].forEach(ev => tIn.addEventListener(ev, syncInput));
+  tIn.addEventListener('focus', () => tC.classList.add('blink'));
+  tIn.addEventListener('blur', () => { tC.classList.remove('blink'); if (game && !isTouch()) game.pause(); });
+  tIn.addEventListener('keydown', e => {
+    if (game) { e.stopPropagation(); game.key(e); return; }
+    if (e.key === 'Enter') { e.preventDefault(); const v = tIn.value; tIn.value = ''; runCommand(v); syncInput(); return; }
+    if (e.key === 'Tab') { e.preventDefault(); complete(); return; }
+    if (e.key === 'ArrowUp') { e.preventDefault(); if (tHi > 0) { tIn.value = tHist[--tHi]; } tIn.setSelectionRange(tIn.value.length, tIn.value.length); syncInput(); return; }
+    if (e.key === 'ArrowDown') { e.preventDefault(); if (tHi < tHist.length - 1) { tIn.value = tHist[++tHi]; } else { tHi = tHist.length; tIn.value = ''; } syncInput(); return; }
+    if (e.ctrlKey && e.key.toLowerCase() === 'l') { e.preventDefault(); tOut.innerHTML = ''; return; }
+    if (e.ctrlKey && e.key.toLowerCase() === 'c') { if (String(getSelection())) return; e.preventDefault(); print(ps1() + esc(tIn.value) + '^C', 'echo'); tIn.value = ''; syncInput(); return; }
+    if (e.key.length === 1 || e.key === 'Backspace') SFX.key();
+  });
+  const when = new Date().toLocaleString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+  print(`<span class="pri">OttoOS 2.0.26 LTS</span> (tty1)\n<span class="dim">último login: ${esc(when)} de 127.0.0.1</span>\n\ndigite <span class="pri">help</span> para ver os comandos disponíveis.\n`);
+  syncInput();
+}
+
+/* ---------------- easter egg: snake ---------------- */
+let game = null;
+function snake() {
+  if (game) return;
+  const COLS = 24, ROWS = 14;
+  const body = $('#win-terminal .win-body');
+  const cell = clamp(Math.floor(Math.min(body.clientWidth - 40, 456) / COLS), 10, 19);
+  const W = COLS * cell, H = ROWS * cell;
+  const wrap = document.createElement('div');
+  wrap.className = 'snake';
+  wrap.innerHTML = `<canvas role="img" aria-label="Jogo snake"></canvas>
+    <div class="snake-hud"><span>pontos: <b class="s-score">0</b></span><span>recorde: <b class="s-best">0</b></span></div>
+    <div class="snake-help dim">${isTouch() ? 'deslize ou use as setas · toque para pausar' : '[setas/wasd] mover · [espaço] pausar · [q] sair'}</div>
+    <div class="snake-pad"><button type="button" data-d="up" aria-label="cima">▲</button><button type="button" data-d="left" aria-label="esquerda">◀</button><button type="button" data-d="down" aria-label="baixo">▼</button><button type="button" data-d="right" aria-label="direita">▶</button></div>
+    ${isTouch() ? '<div class="btns" style="margin-top:10px"><button class="btn" type="button" data-quit>[ sair do jogo ]</button></div>' : ''}`;
+  tOut.appendChild(wrap);
+  $('#term-line').classList.add('gaming');
+  const cv = $('canvas', wrap), ctx = cv.getContext('2d'), dpr = window.devicePixelRatio || 1;
+  cv.width = W * dpr; cv.height = H * dpr; cv.style.width = W + 'px'; cv.style.height = 'auto';
+  ctx.scale(dpr, dpr);
+  termScroll();
+  if (isTouch()) tIn.blur();
+
+  const DIRS = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+  const OPP = { up: 'down', down: 'up', left: 'right', right: 'left' };
+  const KEYS = { arrowup: 'up', w: 'up', arrowdown: 'down', s: 'down', arrowleft: 'left', a: 'left', arrowright: 'right', d: 'right' };
+  let best = +store.get('ock-snake', 0) || 0;
+  let sn, dir, queue, food, score, speed, timer, state, ticks = 0;
+  const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+  function reset() {
+    sn = [[8, 7], [7, 7], [6, 7], [5, 7]]; dir = 'right'; queue = []; score = 0; speed = 140; state = 'run';
+    placeFood(); hud(); loop();
+  }
+  function placeFood() {
+    do { food = [Math.random() * COLS | 0, Math.random() * ROWS | 0]; } while (sn.some(p => p[0] === food[0] && p[1] === food[1]));
+  }
+  function hud() { $('.s-score', wrap).textContent = score; $('.s-best', wrap).textContent = best; }
+  function loop() { clearTimeout(timer); if (state === 'run') timer = setTimeout(step, speed); draw(); }
+  function step() {
+    ticks++;
+    const nd = queue.shift(); if (nd && nd !== OPP[dir]) dir = nd;
+    const [dx, dy] = DIRS[dir], h = [sn[0][0] + dx, sn[0][1] + dy];
+    const hitsSelf = sn.some((p, i) => i < sn.length - 1 && p[0] === h[0] && p[1] === h[1]);
+    if (h[0] < 0 || h[1] < 0 || h[0] >= COLS || h[1] >= ROWS || hitsSelf) { state = 'over'; SFX.err(); return loop(); }
+    sn.unshift(h);
+    if (h[0] === food[0] && h[1] === food[1]) {
+      score++; SFX.click(); speed = Math.max(65, speed - 4);
+      if (score > best) { best = score; store.set('ock-snake', best); }
+      placeFood(); hud();
+    } else sn.pop();
+    loop();
+  }
+  function draw() {
+    const bg = css('--win-2'), pri = css('--pri'), fg = css('--fg'), line = css('--line-strong');
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = line;
+    for (let x = 0; x < COLS; x++) for (let y = 0; y < ROWS; y++) ctx.fillRect(x * cell + cell / 2 - .5, y * cell + cell / 2 - .5, 1, 1);
+    const f = Math.round(cell * (ticks % 4 < 2 ? .22 : .3));
+    ctx.fillStyle = fg; ctx.fillRect(food[0] * cell + f, food[1] * cell + f, cell - 2 * f, cell - 2 * f);
+    sn.forEach((p, i) => { ctx.fillStyle = i === 0 ? fg : pri; ctx.fillRect(p[0] * cell + 1, p[1] * cell + 1, cell - 2, cell - 2); });
+    if (state !== 'run') {
+      ctx.globalAlpha = .82; ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1;
+      ctx.fillStyle = pri; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.font = `${Math.round(cell * 2.4)}px VT323, monospace`;
+      ctx.fillText(state === 'over' ? 'GAME OVER' : 'PAUSADO', W / 2, H / 2 - cell * .8);
+      ctx.fillStyle = fg; ctx.font = `${Math.round(cell * 1.15)}px VT323, monospace`;
+      const sub = state === 'over'
+        ? (isTouch() ? 'toque para jogar de novo' : '[r] jogar de novo · [q] sair')
+        : (isTouch() ? 'toque para continuar' : '[espaço] continuar · [q] sair');
+      ctx.fillText(sub, W / 2, H / 2 + cell * 1.2);
+    }
+  }
+  function turn(d) {
+    if (state === 'pause') { state = 'run'; loop(); }
+    if (state !== 'run') return;
+    const last = queue.length ? queue[queue.length - 1] : dir;
+    if (d !== last && d !== OPP[last] && queue.length < 3) queue.push(d);
+  }
+  function key(e) {
+    const k = (e.key || '').toLowerCase();
+    if (!(KEYS[k] || [' ', 'p', 'r', 'enter', 'q', 'escape'].includes(k))) return false;
+    if (e.preventDefault) e.preventDefault();
+    if (KEYS[k]) return turn(KEYS[k]);
+    if (k === ' ' || k === 'p') { if (state === 'run') state = 'pause'; else if (state === 'pause') state = 'run'; return loop(); }
+    if ((k === 'r' || k === 'enter') && state === 'over') return reset();
+    if (k === 'q' || k === 'escape') return stop();
+  }
+  function pause() { if (state === 'run') { state = 'pause'; loop(); } }
+  function stop(silent) {
+    clearTimeout(timer); wrap.remove(); $('#term-line').classList.remove('gaming'); tIn.value = ''; game = null;
+    print(`<span class="dim">fim de jogo — pontos: ${score} · recorde: ${best}</span>`);
+    syncInput();
+    if (!silent && !isTouch()) termFocus();
+  }
+  wrap.addEventListener('click', e => {
+    const b = e.target.closest('[data-d]');
+    if (b) { turn(b.dataset.d); if (!isTouch()) termFocus(); return; }
+    if (e.target.closest('[data-quit]')) stop();
+  });
+  let sx = 0, sy = 0;
+  cv.addEventListener('pointerdown', e => { sx = e.clientX; sy = e.clientY; });
+  cv.addEventListener('pointerup', e => {
+    const dx = e.clientX - sx, dy = e.clientY - sy;
+    if (Math.max(Math.abs(dx), Math.abs(dy)) < 18) {
+      if (state === 'over') reset(); else if (state === 'pause') { state = 'run'; loop(); } else if (isTouch()) pause();
+      return;
+    }
+    turn(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
+  });
+  game = { key, stop, pause };
+  reset();
+}
+
+/* ---------------- preferências ---------------- */
+const THEMES = ['branco', 'verde', 'azul']; // o primeiro é o tema padrão
+const THEME_ALIAS = { green: 'verde', blue: 'azul', white: 'branco', paper: 'branco' };
+const THEME_COLOR = { verde: '#030803', azul: '#02050d', branco: '#d5ccb6' };
+function setTheme(t) {
+  document.documentElement.dataset.theme = t;
+  store.set('ock-theme', t);
+  $('meta[name="theme-color"]').content = THEME_COLOR[t];
+  const b = $('#btn-theme'); b.title = 'tema: ' + t; b.setAttribute('aria-label', 'Trocar tema de cores (atual: ' + t + ')');
+}
+function setSound(on) {
+  SFX.on = on; store.set('ock-sound', on ? 'on' : 'off');
+  const b = $('#btn-sound'); b.innerHTML = pix(on ? ICONS.soundOn : ICONS.soundOff);
+  b.setAttribute('aria-pressed', on); b.title = 'sons: ' + (on ? 'ligados' : 'desligados');
+}
+function setCrt(on) {
+  document.body.classList.toggle('no-crt', !on); store.set('ock-crt', on ? 'on' : 'off');
+  const b = $('#btn-crt'); b.setAttribute('aria-pressed', on); b.title = 'efeito CRT: ' + (on ? 'ligado' : 'desligado');
+}
+
+/* ---------------- texto digitado na home ---------------- */
+function typer() {
+  const el = $('#typed');
+  if (reduceMotion) { el.textContent = CV.frases[0]; return; }
+  let i = 0, j = 0, del = false;
+  const tick = () => {
+    const f = CV.frases[i];
+    if (!del) { el.textContent = f.slice(0, ++j); if (j === f.length) { del = true; return setTimeout(tick, 2000); } }
+    else { el.textContent = f.slice(0, --j); if (j === 0) { del = false; i = (i + 1) % CV.frases.length; return setTimeout(tick, 350); } }
+    setTimeout(tick, del ? 22 : 45 + Math.random() * 40);
+  };
+  tick();
+}
+
+/* ---------------- mascote ---------------- */
+const TIPS = [
+  'oi! eu sou o bit. clica nos ícones pra explorar :)',
+  'dá pra arrastar as janelas pela barra de título.',
+  'abre o terminal e digita "help".',
+  'tenta "neofetch" no terminal.',
+  'o botão de cima à esquerda troca o tema: branco, verde ou azul.',
+  'achou as scanlines demais? desliga no terceiro botão.',
+  'sudo? pode tentar… ;)',
+  'tem um minigame escondido no terminal. dica: sssss…',
+  'feito com HTML, CSS e JS puro. sem frameworks.'
+];
+let tipI = 0, tipTimer;
+function say(text) {
+  const b = $('#bubble');
+  b.innerHTML = `<span class="who">bit:</span> ${esc(text)}`;
+  b.hidden = false;
+  clearTimeout(tipTimer);
+  tipTimer = setTimeout(() => { b.hidden = true; }, 6000);
+}
+
+/* ---------------- relógio ---------------- */
+function clock() {
+  $('#clock').textContent = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
+
+/* ---------------- boot ---------------- */
+async function boot() {
+  const el = $('#boot'), out = $('#boot-text');
+  if (reduceMotion || session.get('ock-booted')) { el.remove(); return; }
+  session.set('ock-booted', '1');
+  let skipped = false;
+  const skip = () => { skipped = true; };
+  addEventListener('keydown', skip, { once: true });
+  el.addEventListener('pointerdown', skip, { once: true });
+  const sleep = ms => new Promise(r => setTimeout(r, skipped ? 0 : ms));
+  const w = s => { out.innerHTML += s; };
+  const devs = ['java', 'python', 'pl/sql', 'oracle database', 'docker · kubernetes', 'neovim config'];
+
+  w(`OCK-BIOS v2.0.26  (C) 2022-2026 ${esc(CV.nome)}\n`);
+  w(`Processador: Eng. da Computação @ Instituto Mauá de Tecnologia\n`);
+  await sleep(250);
+  w('Teste de memória: <span id="mem">0</span>K');
+  const mem = $('#mem');
+  for (let k = 0; k <= 65536 && !skipped; k += 4096) { mem.textContent = k; await sleep(22); }
+  mem.textContent = '65536'; w(' <span class="ok">OK</span>\n\nDetectando dispositivos...\n');
+  for (const d of devs) { await sleep(110); w(`  ${(d + ' ').padEnd(28, '.')} <span class="ok">[ OK ]</span>\n`); }
+  await sleep(180);
+  w(`\nMontando /home/${esc(CV.apelido)} ${'.'.repeat(14)} <span class="ok">[ OK ]</span>\nCarregando portfolio.sys\n[<span id="pb"></span>] <span id="pp">0</span>%\n`);
+  const pb = $('#pb'), pp = $('#pp');
+  for (let k = 0; k <= 30; k++) { pb.textContent = '█'.repeat(k) + '░'.repeat(30 - k); pp.textContent = Math.round(k / 30 * 100); await sleep(26); }
+  w('\nBem-vindo, visitante.');
+  await sleep(450);
+  removeEventListener('keydown', skip);
+  el.classList.add('off');
+  await new Promise(r => setTimeout(r, 430));
+  el.remove();
+  const screen = $('#screen');
+  screen.classList.add('power-on');
+  screen.addEventListener('animationend', () => screen.classList.remove('power-on'), { once: true });
+  SFX.boot();
+}
+
+/* ---------------- init ---------------- */
+function init() {
+  // preferências salvas
+  setTheme(THEMES.includes(store.get('ock-theme', THEMES[0])) ? store.get('ock-theme', THEMES[0]) : THEMES[0]);
+  setSound(SFX.on);
+  setCrt(store.get('ock-crt', 'on') === 'on');
+  $('#btn-theme').innerHTML = pix(ICONS.theme);
+  $('#btn-crt').innerHTML = pix(ICONS.crt);
+  $('#mascot').innerHTML = pix(ICONS.bit);
+
+  // links da status bar
+  $('#sb-gh').href = CV.github; $('#sb-in').href = CV.linkedin; $('#sb-mail').href = 'mailto:' + CV.email;
+
+  // janelas
+  const home = makeWindow('home', 'home', renderHome(), { w: 660, noClose: true });
+  Object.entries(WINDOWS).forEach(([id, w]) => makeWindow(id, w.title, w.render(), { w: w.w, h: w.h }));
+  initTerminal();
+  centerHome();
+  focusWin(home);
+  typer();
+  clock(); setInterval(clock, 15000);
+
+  // eventos globais
+  document.addEventListener('click', e => {
+    const o = e.target.closest('[data-open]');
+    if (o) { openWin(o.dataset.open); return; }
+    if (e.target.closest('[data-cv]')) { SFX.click(); window.open(CV.cvPdf, '_blank', 'noopener'); return; }
+    const f = e.target.closest('[data-focus]');
+    if (f) { const w = $('#win-' + f.dataset.focus); focusWin(w); pulse(w); SFX.click(); if (f.dataset.focus === 'terminal') termFocus(); }
+  });
+  $('#btn-theme').addEventListener('click', () => {
+    const cur = document.documentElement.dataset.theme;
+    setTheme(THEMES[(THEMES.indexOf(cur) + 1) % THEMES.length]); SFX.click();
+  });
+  $('#btn-sound').addEventListener('click', () => { setSound(!SFX.on); SFX.click(); });
+  $('#btn-crt').addEventListener('click', () => { setCrt(document.body.classList.contains('no-crt')); SFX.click(); });
+  $('#mascot').addEventListener('click', () => { SFX.click(); say(TIPS[tipI++ % TIPS.length]); });
+  $('#copy-email').addEventListener('click', async e => {
+    const b = e.currentTarget;
+    try { await navigator.clipboard.writeText(CV.email); b.textContent = '[ copiado! ]'; }
+    catch (err) { b.textContent = '[ ' + CV.email + ' ]'; }
+    SFX.click(); setTimeout(() => { b.textContent = '[ copiar e-mail ]'; }, 1800);
+  });
+  addEventListener('keydown', e => {
+    if (game && e.target !== tIn && !(e.target.closest && e.target.closest('input, textarea, button, a'))) { game.key(e); return; }
+    if (e.key !== 'Escape' || $('#boot')) return;
+    const top = $$('.win:not([hidden]):not(#win-home)').sort((a, b) => (+b.style.zIndex || 0) - (+a.style.zIndex || 0))[0];
+    if (top) closeWin(top.dataset.win);
+  });
+  let rz;
+  addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { centerHome(); keepInView(); }, 80); });
+
+  renderTasks();
+  boot().then(() => {
+    if (!session.get('ock-greeted')) { session.set('ock-greeted', '1'); setTimeout(() => say(TIPS[tipI++]), 1400); }
+  });
+}
+
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if ($('#win-home')) centerHome(); });
+init();
+})();
+</script>
+</body>
+</html>
